@@ -1,16 +1,14 @@
 package database
 
 import (
-    // TODO: Import necessary packages
-    // "gorm.io/gorm"
-    // Import model structures
+	"log"
+
+	"github.com/ahargunyllib/task-5-pbi-btpns-Nugraha_Billy_Viandy/models"
 )
 
-// TODO: Implement a function to handle database migrations
-func Migrate(db *gorm.DB) {
-    // TODO: Add model structures here to be migrated
-    // Example: db.AutoMigrate(&models.User{}, &models.Photo{})
-
+func Migrate() {
+    Database.AutoMigrate(&models.User{})
+    log.Println("Database Migration Completed!")
     // TODO: Handle any migration errors
 }
 
