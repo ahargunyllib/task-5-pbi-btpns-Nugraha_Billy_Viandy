@@ -45,7 +45,7 @@ func Login(context *gin.Context) {
     }
 
     var user models.User
-    err := database.Database.Where("username=?", input.Username).Find(&user).Error
+    err := database.Database.Where("email=?", input.Email).Find(&user).Error
     if err != nil {
         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
