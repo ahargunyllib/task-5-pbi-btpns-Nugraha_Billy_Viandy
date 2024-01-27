@@ -17,7 +17,7 @@ func SetupRouter() *gin.Engine {
 	// Contoh: r.Use(middlewares.AuthMiddleware())
 	publicRoutes := router.Group("/auth")
 	publicRoutes.POST("/register", controllers.Register)
-	// publicRoutes.POST("/login", controllers.Login)
+	publicRoutes.POST("/login", controllers.Login)
 	// TODO: Definisikan rute untuk User
 	// Contoh:
 	// userGroup := r.Group("/users")

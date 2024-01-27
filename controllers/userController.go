@@ -7,7 +7,9 @@ import (
 	"github.com/ahargunyllib/task-5-pbi-btpns-Nugraha_Billy_Viandy/app"
 	"github.com/ahargunyllib/task-5-pbi-btpns-Nugraha_Billy_Viandy/database"
 	"github.com/ahargunyllib/task-5-pbi-btpns-Nugraha_Billy_Viandy/models"
+    "github.com/ahargunyllib/task-5-pbi-btpns-Nugraha_Billy_Viandy/helpers"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Register(context *gin.Context) {
@@ -40,37 +42,35 @@ func Register(context *gin.Context) {
 // - Verifikasi user dan password
 // - Buat dan return JWT token jika login sukses
 // - Handle error dan return response yang sesuai
-// func Login(context *gin.Context) {
-//     var input app.RegisterInput
+func Login(context *gin.Context) {
+    var input app.LoginInput
 
-//     if err := context.ShouldBindJSON(&input); err != nil {
-//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//         return
-//     }
+    if err := context.ShouldBindJSON(&input); err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-//     // user, err := models.FindUserByUsername(input.Username)
-//     user := database.Database.where("username=?", input.Username).Find(&user)
+    var user models.User
+    err := database.Database.Where("username=?", input.Username).Find(&user).Error
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-//     if err != nil {
-//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//         return
-//     }
+    err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-//     err = user.ValidatePassword(input.Password)
+    jwt, err := helpers.GenerateJWT(user)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
 
-//     if err != nil {
-//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//         return
-//     }
-
-//     jwt, err := helpers.GenerateJWT(user)
-//     if err != nil {
-//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-//         return
-//     }
-
-//     context.JSON(http.StatusOK, gin.H{"jwt": jwt})
-// }
+    context.JSON(http.StatusOK, gin.H{"jwt": jwt})
+}
 
 // TODO: Implementasi fungsi untuk update user (PUT /users/:userId)
 // - Validasi JWT
