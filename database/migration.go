@@ -7,8 +7,7 @@ import (
 )
 
 func Migrate() {
-    Database.AutoMigrate(&models.User{})
-    log.Println("Database Migration Completed!")
-    // TODO: Handle any migration errors
+	Database.AutoMigrate(&models.User{})
+	log.Println("Database Migration Completed!")
+	// TODO: Handle any migration errors
 }
-

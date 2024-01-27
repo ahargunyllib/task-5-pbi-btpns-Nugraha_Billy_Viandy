@@ -1,35 +1,64 @@
 package models
 
 import (
-    // TODO: Import necessary packages
-    "time"
-    "gorm.io/gorm"
-    "github.com/asaskevich/govalidator"
+	// TODO: Import necessary packages
+	"html"
+	"strings"
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+
+	"github.com/asaskevich/govalidator"
 )
 
 // User struct represents the user model
 type User struct {
-        ID          uint        `gorm:"primaryKey" json:"id"`
-        Username    string      `gorm:"not null;unique" json:"username" form:"username" valid:"required~Username is required"`
-        Email       string      `gorm:"not null;unique" json:"email" form:"email" valid:"required~Email is required,email~Invalid Email"`
-        Password    string      `gorm:"size:6;not null" form:"password" valid:"required~Password is required,minstringlength(6)~Password minimum is 6 characters"`
-        Photos      []Photo     `gorm:"constraint:OnDelete:CASCADE;"`
-        CreatedAt   time.Time   `gorm:"autoCreateTime" json:"created_at"`
-        UpdatedAt   time.Time   `gorm:"autoUpdateTime" json:"updated_at"` 
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	Username  string    `gorm:"not null;unique" json:"username" form:"username" valid:"required~Username is required"`
+	Email     string    `gorm:"not null;unique" json:"email" form:"email" valid:"required~Email is required,email~Invalid Email"`
+	Password  string    `gorm:"not null" form:"password" valid:"required~Password is required,minstringlength(6)~Password minimum is 6 characters"`
+	Photos    []Photo   `gorm:"constraint:OnDelete:CASCADE;"`
+	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
-// BeforeCreate digunakan untuk validasi sebelum data User dibuat.
+// Melakukan validasi sebelum data User dibuat.
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return user.validateStruct()
 }
 
-// BeforeUpdate digunakan untuk validasi sebelum data User diperbarui.
+// Melakukan validasi sebelum data User diperbarui.
 func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	return user.validateStruct()
 }
 
-// validateStruct digunakan untuk melakukan validasi struct menggunakan govalidator.
+// Melakukan validasi struct menggunakan govalidator.
 func (user *User) validateStruct() error {
 	_, err := govalidator.ValidateStruct(user)
 	return err
 }
+
+// Menghapus semua whitespace dan melakukan hashing password
+func (user *User) BeforeSave(*gorm.DB) error {
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	user.Password = string(passwordHash)
+	user.Username = html.EscapeString(strings.TrimSpace(user.Username))
+	return nil
+}
+
+func (user *User) ValidatePassword(password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+}
+
+// func FindUserByUsername(username string) (User, error) {
+// 	var user User
+// 	err := database.Database.Where("username=?", username).Find(&user).Error
+// 	if err != nil {
+// 		return User{}, err
+// 	}
+// 	return user, nil
+// }
