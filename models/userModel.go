@@ -1,7 +1,6 @@
 package models
 
 import (
-	// TODO: Import necessary packages
 	"html"
 	"strings"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-// User struct represents the user model
 type User struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	Username  string    `gorm:"not null;unique" json:"username" form:"username" valid:"required~Username is required"`
@@ -23,23 +21,19 @@ type User struct {
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
 
-// Melakukan validasi sebelum data User dibuat.
 func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return user.validateStruct()
 }
 
-// Melakukan validasi sebelum data User diperbarui.
 func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	return user.validateStruct()
 }
 
-// Melakukan validasi struct menggunakan govalidator.
 func (user *User) validateStruct() error {
 	_, err := govalidator.ValidateStruct(user)
 	return err
 }
 
-// Menghapus semua whitespace dan melakukan hashing password
 func (user *User) BeforeSave(*gorm.DB) error {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {

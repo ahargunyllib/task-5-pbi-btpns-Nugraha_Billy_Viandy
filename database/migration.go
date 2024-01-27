@@ -9,5 +9,4 @@ import (
 func Migrate() {
 	Database.AutoMigrate(&models.User{}, &models.Photo{})
 	log.Println("Database Migration Completed!")
-	// TODO: Handle any migration errors
 }

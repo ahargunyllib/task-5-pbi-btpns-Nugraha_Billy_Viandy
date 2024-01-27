@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	// TODO: Import package JWT
 	"errors"
 	"fmt"
 	"os"

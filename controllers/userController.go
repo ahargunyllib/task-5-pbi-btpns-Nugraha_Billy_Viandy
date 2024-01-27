@@ -36,12 +36,6 @@ func Register(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"message":"User berhasil dibuat"})
 }
 
-// TODO: Implementasi fungsi untuk login user (POST /users/login)
-// - Terima email dan password dari request
-// - Validasi data
-// - Verifikasi user dan password
-// - Buat dan return JWT token jika login sukses
-// - Handle error dan return response yang sesuai
 func Login(context *gin.Context) {
     var input app.LoginInput
 
