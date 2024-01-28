@@ -23,6 +23,8 @@ func SetupRouter() *gin.Engine {
 	protectedRoutes.Use(middlewares.JWTAuthMiddleware())
 	protectedRoutes.POST("/", controllers.AddPhoto)
 	protectedRoutes.GET("/", controllers.GetAllPhotos)
+	protectedRoutes.PATCH("/:photoId", controllers.UpdatePhoto)
+	protectedRoutes.DELETE("/:photoId", controllers.DeletePhoto)
 
 	// Return router
 	return router
