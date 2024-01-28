@@ -13,14 +13,16 @@ func SetupRouter() *gin.Engine {
 	// Inisialisasi router Gin
 	router := gin.Default()
 
-	publicRoutes := router.Group("/auth")
+	publicRoutes := router.Group("/users")
 	publicRoutes.POST("/register", controllers.Register)
 	publicRoutes.POST("/login", controllers.Login)
+	publicRoutes.PATCH("/:userId", controllers.Update)
+	publicRoutes.DELETE("/:userId", controllers.Delete)
 
-	protectedRoutes := router.Group("/api")
+	protectedRoutes := router.Group("/photos")
 	protectedRoutes.Use(middlewares.JWTAuthMiddleware())
-	protectedRoutes.POST("/photos", controllers.AddPhoto)
-	protectedRoutes.GET("/photos", controllers.GetAllPhotos)
+	protectedRoutes.POST("/", controllers.AddPhoto)
+	protectedRoutes.GET("/", controllers.GetAllPhotos)
 
 	// Return router
 	return router
